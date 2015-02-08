@@ -33,4 +33,8 @@ I do have a wishlist:
 * Add replacement variables.
 * Metadata summaries to show on the home page.
 
+You can check out perl-p4g3s running here:
+
+    [http://perl-p4g3s.matthewmacgregor.net/](http://perl-p4g3s.matthewmacgregor.net/)
+
 You can keep track of me on [Twitter](https://twitter.com/matsuzine).
