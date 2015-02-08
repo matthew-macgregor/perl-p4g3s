@@ -1,5 +1,28 @@
 #!/usr/bin/perl
 
+# The MIT License (MIT)
+#
+# Copyright (c) 2015 Matthew MacGregor
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+# THE SOFTWARE.
+
+
 #use v5.14;
 use warnings;
 use strict;
@@ -10,6 +33,9 @@ use lib "$FindBin::Bin/lib";
 use Markdown;
 use File::Path qw(rmtree);
 
+#
+# Global configuration data. 
+#
 my %config = (
     "site.title"        => "perl-p4g3s",
     "copyright"         => "&copy; 2015 You",
@@ -87,7 +113,10 @@ sub readMarkdownFromFile {
 }
 
 #
-# Reads a Unit, extracting the metadata section first and text/markdown next.
+# Reads a Unit (markdown file), extracting the metadata section first and
+# text/markdown next.
+#
+# readUnit PATH
 #
 sub readUnit {
     my $filename = shift;
@@ -100,6 +129,13 @@ sub readUnit {
     return %meta;
 }
 
+
+#
+# Accepts a filename/path to a markdown file and returns the equivalent filename
+# /path for the cached version.
+#
+# getCachedFilename FILENAME
+#
 sub getCachedFilename {
     my $ofn = shift;
     (my $fn = $ofn) =~ s/\.[^.]+$//;
@@ -112,6 +148,9 @@ sub getCachedFilename {
     return $fn;
 }
 
+#
+# Creates the directories used by the caching functionality.
+#
 sub createCacheDirectories {
 
     if (! -d "data/cache" || ! -d "data/cache/post" || ! -d "data/cache/page") {
@@ -121,6 +160,11 @@ sub createCacheDirectories {
     }
 }
 
+#
+# Does the work of caching. Accepts the filename for the cached file.
+#
+# cache HTML, FILENAME
+#
 sub cache {
     my $html = shift;
     my $ofn = shift;
@@ -141,6 +185,9 @@ sub cache {
     return $html;
 }
 
+#
+# Removes the entire data/cache/ directory tree.
+#
 sub clearCache {
     if( ! $config{"caching.enabled"} ) {
         return;
@@ -149,6 +196,12 @@ sub clearCache {
     rmtree( "data/cache" );
 }
 
+#
+# Attempts to use the cached version of a file. Accepts the uncached filename/
+# path and translates this to the cached version.
+#
+# useCachedFile FILENAME
+#
 sub useCachedFile {
     if( ! $config{"caching.enabled"} ) {
         return "";
@@ -170,6 +223,11 @@ sub useCachedFile {
     return $html; # returns empty string (false) if couldn't do anything.
 }
 
+#
+# Render a single view (post, page).
+#
+# viewSingle FILENAME
+#
 sub viewSingle {
 	my $fn = shift;
     my $html = useCachedFile( $fn );
@@ -188,6 +246,11 @@ sub viewSingle {
 	}
 }
 
+#
+# Render a multi-view (home page).
+#
+# viewMulti FILELIST
+#
 sub viewMulti {
 
 	my @fn = (glob shift);
@@ -212,6 +275,11 @@ sub viewMulti {
 
 }
 
+#
+# Renders the archive view.
+#
+# viewArchive FILELIST
+#
 sub viewArchive {
 	my @fn = (glob shift);
 
@@ -230,6 +298,12 @@ sub viewArchive {
 	return view( $html );
 }
 
+
+#
+# Renders a message that the cache was cleared.
+#
+# viewCacheCleared BOOL
+#
 sub viewCacheCleared {
     my $result = shift;
     my $not = ( $result ) ? "" : "NOT";
@@ -315,7 +389,7 @@ unless (caller) {
 
 
 #
-# View:
+# Renders the wrapper html for all views.
 #
 sub view {
     my $html = shift;
