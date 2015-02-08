@@ -345,7 +345,6 @@ sub view {
                     <a href="/"><i class="fa fa-home"></i> home</a>
                     <a href="/archive"><i class="fa fa-database"></i> archives</a>
                     <a href="/page/about"><i class="fa fa-male"></i>about</a>
-                    <a href="https://twitter.com/matsuzine" ><i class="fa fa-twitter"></i> twitter</a>
                 </div>
             </div>
         </div>
