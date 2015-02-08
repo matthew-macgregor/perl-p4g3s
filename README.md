@@ -1,9 +1,10 @@
 Welcome to perl-p4g3s (Perl-Pages)
 ==================================
 
+![Perl-Pages](/site/img/camel.jpeg)
+
 Getting started with perl-p4g3s is pretty easy. Check out the code from
-GitHub. The project contains a starter folder structure. perl-p4g3s uses the
-following folder structure:
+GitHub. The project contains a starter folder structure:
 
     site-root/
         data/
