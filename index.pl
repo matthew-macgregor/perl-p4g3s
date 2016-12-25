@@ -22,7 +22,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-
 #use v5.14;
 use warnings;
 use strict;
@@ -39,7 +38,8 @@ use File::Path qw(rmtree);
 my %config = (
     "site.title"        => "perl-p4g3s",
     "copyright"         => "&copy; 2015 You",
-    "caching.enabled"   => 1
+    "caching.enabled"   => 1,
+    "site.uri"          => "/"
 );
 
 #
@@ -58,13 +58,11 @@ sub readMetaFromFile {
         return "";
     }
     while ( <$FH> ){
-
-        if( trim($_) eq "..."){
-
+        my $t = trim($_);
+        if( $t eq "---" || $t eq "..." ){
             last;
         }
         $meta .= "$_\n";
-
     }
     return $meta;
 }
@@ -224,6 +222,27 @@ sub useCachedFile {
 }
 
 #
+# Replace variable in content
+#
+sub replace {
+    my $content = shift;
+    my $uri = $config{'site.uri'};
+
+    #$uri = quotemeta $uri; # escape regex metachars if present
+
+    # Replace {{URL}} only if it doesn't contain the special sequence 'IGNORE-'
+    # {{            =>  match leading braces
+    #  *            =>  match 0 or more spaces
+    # (?<!IGNORE-)  =>  negative lookbehind: don't match if IGNORE-
+    #  *            =>  match 0 or more spaces
+    # }}            =>  match closing braces
+    $content =~ s/{{ *(?<!IGNORE-)URL *}}/$uri/g;
+    # Now replace all instances of the special sequence (used as an escape)
+    $content =~ s/{{ *IGNORE-/{{/g;
+    return $content;
+}
+
+#
 # Render a single view (post, page).
 #
 # viewSingle FILENAME
@@ -256,6 +275,7 @@ sub viewMulti {
 	my @fn = (glob shift);
     my $cachedHome = "data/cache/cached-home.html";
 	my $html = useCachedFile( $cachedHome );
+    my $url = $config{'site.uri'};
 
     if( $html ) {
         return $html;
@@ -267,8 +287,10 @@ sub viewMulti {
         $pn =~ s|/data||;
         my %unit = readUnit($fn);
         if ( ! $unit{text} ) { last; }
-        $html .= $unit{text};
-        $html .= "<p class='post-date'>Posted: $unit{date} by $unit{author} | <a href='$pn'>View</a></p>\n<hr/>\n<br/>\n<br/>";
+        $html .= "<div class=\"post-content\">\n";
+        $html .= "    " . $unit{text};
+        $html .= "    <p class='post-date'>Posted: $unit{date} by $unit{author} | <a href=\"$url/$pn\">View</a></p>\n";
+        $html .= "</div> <!-- end post-content -->\n";
 	}
 	$html .= "<p class='center'>See more in the <a href='/archive'>Archive</a></p>\n";
 	return cache( view( $html ), $cachedHome  );
@@ -282,8 +304,9 @@ sub viewMulti {
 #
 sub viewArchive {
 	my @fn = (glob shift);
-
 	my $html = "<h3>Archive</h3>\n";
+    my $url = $config{'site.uri'};
+
 	$html .= "<table>";
 	for my $fn (sort { $b cmp $a } @fn) {
 		my %unit = readUnit($fn);
@@ -291,8 +314,8 @@ sub viewArchive {
 		my $date = $unit{'date'};
 		if (! $title ) { next; }
 		my ($postid) = $fn =~ m|post/([\w-]+)\.md|;
-		$html .= "<tr><td class='list'><a href='/post/$postid'>[$date]</a>&nbsp;&nbsp;</td>\n";
-		$html .= "<td class='list'><a href='/post/$postid'>$title</a></td></tr>\n";
+		$html .= "<tr><td class=\"list\"><a href=\"$url/post/$postid\">[$date]</a>&nbsp;&nbsp;</td>\n";
+		$html .= "<td class=\"list\"><a href=\"$url/post/$postid\">$title</a></td></tr>\n";
 	}
 	$html.= "</table>\n";
 	return view( $html );
@@ -395,17 +418,18 @@ sub view {
     my $html = shift;
     my $title = $config{"site.title"};
     my $copyright = $config{"copyright"};
+    my $uri = $config{"site.uri"};
 
-    return <<HTML;
+    my $content = <<HTML;
 <!DOCTYPE html>
 <html>
 <head>
     <title>$title</title>
     <meta charset="UTF-8">
     <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
-    <link href='/site/styles.css' rel='stylesheet' type='text/css'>
+    <link href='$uri/site/styles.css' rel='stylesheet' type='text/css'>
     <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
-    <script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>
+    <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
     <meta name="viewport" content="width=device-width" />
 </head>
 <body>
@@ -416,9 +440,9 @@ sub view {
                     <h1 class="title">$title</h1>
                 </div>
                 <div class="nav-links">
-                    <a href="/"><i class="fa fa-home"></i> home</a>
-                    <a href="/archive"><i class="fa fa-database"></i> archives</a>
-                    <a href="/page/about"><i class="fa fa-male"></i>about</a>
+                    <a href="$uri"><i class="fa fa-home"></i> home</a>
+                    <a href="$uri/archive"><i class="fa fa-database"></i> archives</a>
+                    <a href="$uri/page/about"><i class="fa fa-male"></i> about</a>
                 </div>
             </div>
         </div>
@@ -435,4 +459,5 @@ sub view {
 </html>
 HTML
 
+    return replace($content);
 }

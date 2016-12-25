@@ -60,7 +60,7 @@ h1 a, h2 a, h3 a, h4 a, h5 a {
 	color: #595963;
 }
 
- h1, h2, h3, h4, h5 {
+h1, h2, h3, h4, h5 {
 	color: #595963;
 	/* font-family: "Courier New", Courier, monospace; */
 }
@@ -97,6 +97,11 @@ p.list {
 
 .nav-links a:hover {
 	color: red;
+}
+
+.post-date {
+	font-size: small;
+	color: silver;
 }
 
 .blog-title {

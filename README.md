@@ -36,7 +36,7 @@ The header has the following format:
     author: Your Name
     date: 02/08/2015
     tags: comma, delimited, tags, no-spaces-allowed
-    ...
+    ---
 
 If you don't include the header, nothing will blow up but your post won't show
 up in the archive correctly.
