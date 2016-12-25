@@ -3,7 +3,7 @@ AddHandler cgi-script .cgi .pl
 
 RewriteEngine on
 
-RewriteBase /perl-p4g3s/
+RewriteBase /
 
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d 
