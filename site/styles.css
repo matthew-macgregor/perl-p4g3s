@@ -89,10 +89,14 @@ p.list {
 	color: grey;
 }
 
-.nav-links  a {
-
-
+.nav-links {
 	padding: 1em;
+	border-top: 1px solid #F5EDF0;
+	border-bottom: 1px solid #F5EDF0;
+}
+
+.nav-links a {
+	padding: 0 1em 0 1em;
 }
 
 .nav-links a:hover {
@@ -107,6 +111,13 @@ p.list {
 .blog-title {
 	/* font-family: "Courier New", Courier, monospace; */
 	color: darkgreen;
+	background-image: url('img/camel.jpeg');
+	background-size: contain;
+	background-repeat: no-repeat;
+}
+
+.title {
+	margin-left: 2em;
 }
 
 .subtitle {

@@ -38,7 +38,7 @@ use File::Path qw(rmtree);
 my %config = (
     "site.title"        => "perl-p4g3s",
     "copyright"         => "&copy; 2015 You",
-    "caching.enabled"   => 1,
+    "caching.enabled"   => 0,
     "site.uri"          => "/"
 );
 
@@ -292,7 +292,7 @@ sub viewMulti {
         $html .= "    <p class='post-date'>Posted: $unit{date} by $unit{author} | <a href=\"$url/$pn\">View</a></p>\n";
         $html .= "</div> <!-- end post-content -->\n";
 	}
-	$html .= "<p class='center'>See more in the <a href='/archive'>Archive</a></p>\n";
+	$html .= "<p class=\"center\">See more in the <a href=\"$url/archive\">Archive</a></p>\n";
 	return cache( view( $html ), $cachedHome  );
 
 }
@@ -354,15 +354,13 @@ sub routes {
    if ( ! $route ) {
      $route = '/';
    }
-   #print $ENV{REQUEST_URI} . "<br/>"; #/blog/
-   #print $ENV{SERVER_NAME} . "<br/>"; #webserver.local
    if ($route eq '/') {
 		print viewMulti( "data/post/*.md" );
-   } elsif (my ($post) = $route =~ m|post/([\w-]+)|) {
+   } elsif (my ($post) = $route =~ m|^/?post/([\w-]+)/?$|) {
    		print viewSingle( "data/post/$post.md" );
-   } elsif (my ($page) = $route =~ m|page/([\w-]+)|) {
+   } elsif (my ($page) = $route =~ m|^/?page/([\w-]+)/?$|) {
 		print viewSingle( "data/page/$page.md" );
-   } elsif ( $route eq 'archive' ) {
+   } elsif ( $route =~ m|^/?archive/?$| ) {
    		print viewArchive( "data/post/*.md" );
    } elsif ( $route eq 'rmcache' ) {
         my $result = clearCache();
@@ -447,7 +445,6 @@ sub view {
             </div>
         </div>
     </div>
-    <hr/>
     <div class="main">
         $html
         <footer>

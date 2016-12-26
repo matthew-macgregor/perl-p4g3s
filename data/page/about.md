@@ -5,8 +5,6 @@ date: 02/07/2015
 tags: about
 ---
 
-![Perl-Pages]({{URL}}/site/img/camel.jpeg)
-
 **perl-p4g3s** (Perl-Pages) is a micro-framework for blogging. The goals of the project are
 intensely simple: create a useful blog framework with just a single, small file  of perl and
 the Markdown library. More specifically:
@@ -32,3 +30,5 @@ I do have a wishlist:
 * Metadata summaries to show on the home page.
 
 You can keep track of me on [Twitter](https://twitter.com/matsuzine).
+
+![Perl-Pages]({{URL}}/site/img/camel.jpeg)
